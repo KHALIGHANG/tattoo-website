@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>InkSpire Tattoos</title>
+  <style>
+    :root { --bg:#000; --card:#121212; --text:#fff; --muted:#bbb; --accent:#4f8cff; --ok:#2bb673; }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif}
+    nav{position:sticky;top:0;background:#0a0a0a;border-bottom:1px solid #1f1f1f;display:flex;gap:14px;align-items:center;padding:12px 16px;z-index:10;overflow:auto}
+    nav a{color:var(--text);text-decoration:none;padding:8px 10px;border-radius:10px;white-space:nowrap}
+    nav a.active, nav a:hover{background:#1a1a1a}
+    .container{max-width:980px;margin:0 auto;padding:18px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    @media(min-width:800px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    .card{background:var(--card);border:1px solid #1e1e1e;border-radius:16px;padding:12px;box-shadow:0 10px 25px rgba(0,0,0,.35)}
+    .h1{font-size:28px;font-weight:800;margin:0 0 10px}
+    .h2{font-size:22px;font-weight:700;margin:0 0 12px}
+    .muted{color:var(--muted)}
+    img{width:100%;height:180px;object-fit:cover;border-radius:12px;border:1px solid #222}
+    input, textarea, select, button{width:100%;border-radius:12px;border:1px solid #222;background:#0f0f0f;color:var(--text);padding:10px}
+    textarea{min-height:110px;resize:vertical}
+    button{cursor:pointer;background:var(--accent);border:none;font-weight:600}
+    button.ok{background:var(--ok)}
+    ul{margin:0;padding-left:18px}
+    footer{padding:22px;color:#777;text-align:center}
+    .logo{font-weight:900;letter-spacing:.5px}
+    .row{display:grid;gap:10px}
+    @media(min-width:640px){.row{grid-template-columns:1fr 1fr}}
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <!-- React + Router (CDN) + Babel so we can write JSX in one file -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/react-router-dom@6/umd/react-router-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <script type="text/babel">
+    const { HashRouter, Routes, Route, NavLink } = ReactRouterDOM;
+
+    const Page = ({ title, children }) => (
+      <div className="container">
+        <h1 className="h1">{title}</h1>
+        <div className="card">{children}</div>
+      </div>
+    );
+
+    const Home = () => (
+      <Page title="Welcome to InkSpire">
+        <p className="muted" style={{marginBottom:12}}>
+          Your trusted destination for custom tattoos and creative expression.
+        </p>
+        <div className="row">
+          <div className="card">
+            <h2 className="h2">Why Choose Us</h2>
+            <p>Hygienic studio • Skilled artists • Aftercare support.</p>
+          </div>
+          <div className="card">
+            <h2 className="h2">Popular Styles</h2>
+            <p>Fine line • Traditional • Realism • Script • Geometric.</p>
+          </div>
+        </div>
+      </Page>
+    );
+
+    const Catalogue = () => (
+      <Page title="Tattoo Catalogue">
+        <div className="grid">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="card">
+              <img src={`https://picsum.photos/seed/tattoo${i+1}/600/400`} alt={`Tattoo ${i+1}`} />
+              <div style={{marginTop:8,fontWeight:600}}>Design #{i+1}</div>
+              <div className="muted">Tap to discuss customization during booking.</div>
+            </div>
+          ))}
+        </div>
+      </Page>
+    );
+
+    const Appointment = () => {
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        alert("Appointment request submitted! We’ll email you to confirm.");
+      };
+      return (
+        <Page title="Book an Appointment">
+          <form className="row" onSubmit={handleSubmit}>
+            <input required placeholder="Full Name" />
+            <input required type="email" placeholder="Email" />
+            <input required type="tel" placeholder="Phone (WhatsApp preferred)" />
+            <input required type="date" />
+            <select defaultValue="">
+              <option value="" disabled>Select style</option>
+              <option>Fine line</option><option>Traditional</option>
+              <option>Realism</option><option>Script</option><option>Geometric</option>
+            </select>
+            <textarea placeholder="Tattoo idea, size (cm), placement, reference link(s)"></textarea>
+            <button type="submit">Request Booking</button>
+          </form>
+          <p className="muted" style={{marginTop:10}}>Note: This sends a request; final time is confirmed by the artist.</p>
+        </Page>
+      );
+    };
+
+    const Payment = () => {
+      const pay = () => alert("Payment gateway not connected yet. We can add Payfast/Stripe when you're ready.");
+      return (
+        <Page title="Secure Your Spot (Deposit)">
+          <p className="muted">Pay a small deposit to lock in your timeslot.</p>
+          <div className="row">
+            <input placeholder="Your Email for receipt" />
+            <select defaultValue="">
+              <option value="" disabled>Select deposit amount</option>
+              <option>R200</option><option>R300</option><option>R500</option>
+            </select>
+          </div>
+          <div style={{marginTop:12, display:'grid', gap:10}}>
+            <button className="ok" onClick={pay}>Pay with Card</button>
+            <button onClick={pay}>Pay with EFT</button>
+          </div>
+          <p className="muted" style={{marginTop:10}}>We’ll integrate a real gateway on your signal.</p>
+        </Page>
+      );
+    };
+
+    const Schedule = () => (
+      <Page title="Schedule & Availability">
+        <ul>
+          <li>Monday: 10:00 – 18:00</li>
+          <li>Wednesday: 12:00 – 20:00</li>
+          <li>Friday: 10:00 – 17:00</li>
+        </ul>
+        <p className="muted" style={{marginTop:10}}>Public holidays by request. DM us on WhatsApp to confirm.</p>
+      </Page>
+    );
+
+    const Contact = () => (
+      <Page title="Contact Us">
+        <p>Email: contact@inkspire.com</p>
+        <p>Phone/WhatsApp: +27 00 000 0000</p>
+        <p>Location: 123 Tattoo Lane, Inkville</p>
+        <p className="muted">We reply within a few hours.</p>
+      </Page>
+    );
+
+    const Nav = () => (
+      <nav>
+        <span className="logo">🖤 InkSpire</span>
+        <NavLink to="/" end className={({isActive})=>isActive?'active':''}>Home</NavLink>
+        <NavLink to="/catalogue" className={({isActive})=>isActive?'active':''}>Catalogue</NavLink>
+        <NavLink to="/appointment" className={({isActive})=>isActive?'active':''}>Getting an Appointment</NavLink>
+        <NavLink to="/payment" className={({isActive})=>isActive?'active':''}>Payment</NavLink>
+        <NavLink to="/schedule" className={({isActive})=>isActive?'active':''}>Schedule</NavLink>
+        <NavLink to="/contact" className={({isActive})=>isActive?'active':''}>Contact</NavLink>
+      </nav>
+    );
+
+    const App = () => (
+      // HashRouter avoids server config — perfect for one-file deploys
+      <HashRouter>
+        <Nav />
+        <Routes>
+          <Route path="/" element={<Home/>} />
+          <Route path="/catalogue" element={<Catalogue/>} />
+          <Route path="/appointment" element={<Appointment/>} />
+          <Route path="/payment" element={<Payment/>} />
+          <Route path="/schedule" element={<Schedule/>} />
+          <Route path="/contact" element={<Contact/>} />
+        </Routes>
+        <footer>© {new Date().getFullYear()} InkSpire Tattoos</footer>
+      </HashRouter>
+    );
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>
